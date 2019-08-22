@@ -146,15 +146,9 @@ def startGame():
 
                     C_NOTE.play()
 
-                    # Draw the text drop shadow
-                    titleSurf, titleRect = makeTextObjs('C', MEDIUMFONT, TEXTSHADOWCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) - 300, int(WINDOWHEIGHT / 2) + 95)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
-
-                    # Draw the text
-                    titleSurf, titleRect = makeTextObjs('C', MEDIUMFONT, TEXTCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) - 303, int(WINDOWHEIGHT / 2) + 98)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
+                    # C key
+                    displayTextToScreen('C', MEDIUMFONT, TEXTSHADOWCOLOR, -300, 95)
+                    displayTextToScreen('C', MEDIUMFONT, TEXTCOLOR, -303, 98)
 
                 elif event.key == K_s:
 
@@ -165,15 +159,9 @@ def startGame():
 
                     D_NOTE.play()
 
-                    # Draw the text drop shadow
-                    titleSurf, titleRect = makeTextObjs('D', MEDIUMFONT, TEXTSHADOWCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) - 200, int(WINDOWHEIGHT / 2) + 95)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
-
-                    # Draw the text
-                    titleSurf, titleRect = makeTextObjs('D', MEDIUMFONT, TEXTCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) - 203, int(WINDOWHEIGHT / 2) + 98)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
+                    # D key
+                    displayTextToScreen('D', MEDIUMFONT, TEXTSHADOWCOLOR, -200, 95)
+                    displayTextToScreen('D', MEDIUMFONT, TEXTCOLOR, -203, 98)
 
                 elif event.key == K_d:
 
@@ -184,16 +172,9 @@ def startGame():
 
                     E_NOTE.play()
 
-
-                    # Draw the text drop shadow
-                    titleSurf, titleRect = makeTextObjs('E', MEDIUMFONT, TEXTSHADOWCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) - 100, int(WINDOWHEIGHT / 2) + 95)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
-
-                    # Draw the text
-                    titleSurf, titleRect = makeTextObjs('E', MEDIUMFONT, TEXTCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) - 103, int(WINDOWHEIGHT / 2) + 98)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
+                    # E key
+                    displayTextToScreen('E', MEDIUMFONT, TEXTSHADOWCOLOR, -100, 95)
+                    displayTextToScreen('E', MEDIUMFONT, TEXTCOLOR, -103, 98)
 
                 elif event.key == K_f:
 
@@ -204,16 +185,9 @@ def startGame():
 
                     F_NOTE.play()
 
-
-                    # Draw the text drop shadow
-                    titleSurf, titleRect = makeTextObjs('F', MEDIUMFONT, TEXTSHADOWCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2), int(WINDOWHEIGHT / 2) + 95)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
-
-                    # Draw the text
-                    titleSurf, titleRect = makeTextObjs('F', MEDIUMFONT, TEXTCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) - 3, int(WINDOWHEIGHT / 2) + 98)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
+                    # F key
+                    displayTextToScreen('F', MEDIUMFONT, TEXTSHADOWCOLOR, 0, 95)
+                    displayTextToScreen('F', MEDIUMFONT, TEXTCOLOR, -3, 98)
 
                 elif event.key == K_g:
 
