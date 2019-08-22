@@ -71,25 +71,19 @@ def main():
 
 
 def menuScreen():
-    global startRect, helpRect, quitRect
 
     DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
     addTitleToScreen('Monmatia')
 
-    # Draw the "START" text.
-    startSurf, startRect = makeTextObjs('START', BASICFONT, TEXTCOLOR)
-    startRect.center = (int(WINDOWWIDTH / 2) - 100, int(WINDOWHEIGHT / 2))
-    DISPLAYSURF.blit(startSurf, startRect)
+    # Draw the "START" button
+    displayTextToScreen('START', BASICFONT, TEXTCOLOR, -100, 0)
 
-    # Draw the "HELP" text.
-    helpSurf, helpRect = makeTextObjs('HELP', BASICFONT, TEXTCOLOR)
-    helpRect.center = (int(WINDOWWIDTH / 2), int(WINDOWHEIGHT / 2))
-    DISPLAYSURF.blit(helpSurf, helpRect)
+    # Draw the "HELP" button
+    displayTextToScreen('HELP', BASICFONT, TEXTCOLOR, 0, 0)
 
-    # Draw the "QUIT" text.
-    quitSurf, quitRect = makeTextObjs('QUIT', BASICFONT, TEXTCOLOR)
-    quitRect.center = (int(WINDOWWIDTH / 2) + 100, int(WINDOWHEIGHT / 2))
-    DISPLAYSURF.blit(quitSurf, quitRect)
+    # Draw the "QUIT" button
+    displayTextToScreen('QUIT', BASICFONT, TEXTCOLOR, 100, 0)
+
 
 
 def startGame():
@@ -108,12 +102,9 @@ def startGame():
 
     note_position = -300
     for notes in range(1, 9):
-        back = pygame.sprite.Sprite()
-        back.image = pygame.image.load('items/normal_key.png')
-        back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / 10), int(WINDOWHEIGHT/5)))
-        back.rect = back.image.get_rect()
-        back.rect.center = (int(WINDOWWIDTH / 2) + note_position, int(WINDOWHEIGHT / 2) + 100)
-        DISPLAYSURF.blit(back.image, back.rect)
+
+        # Create initial keyboard
+        makeSpriteObject('items/normal_key.png', note_position, 100, 10, 5)
 
         note_position += 100
 
@@ -134,13 +125,10 @@ def startGame():
 
         for event in pygame.event.get():
 
-            back = pygame.sprite.Sprite()
-            back.image = pygame.image.load('items/normal_key.png')
-            back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / 10), int(WINDOWHEIGHT / 5)))
-            back.rect = back.image.get_rect()
-            back.rect.center = (int(WINDOWWIDTH / 2) + pressed_note, int(WINDOWHEIGHT / 2) + 100)
-            DISPLAYSURF.blit(back.image, back.rect)
+            # Return key to normal state
+            makeSpriteObject('items/normal_key.png', pressed_note, 100, 10, 5)
 
+            # Make sure key labels remain on all the keys
             painoKeyNoteNames()
 
             if event.type == pygame.QUIT:
@@ -152,12 +140,10 @@ def startGame():
                 if event.key == K_a:
 
                     pressed_note = -300
-                    back = pygame.sprite.Sprite()
-                    back.image = pygame.image.load('items/pressed_key.png')
-                    back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / 10), int(WINDOWHEIGHT / 5)))
-                    back.rect = back.image.get_rect()
-                    back.rect.center = (int(WINDOWWIDTH / 2) + pressed_note, int(WINDOWHEIGHT / 2) + 100)
-                    DISPLAYSURF.blit(back.image, back.rect)
+
+                    # Change key appearance
+                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
+
                     C_NOTE.play()
 
                     # Draw the text drop shadow
@@ -173,12 +159,10 @@ def startGame():
                 elif event.key == K_s:
 
                     pressed_note = -200
-                    back = pygame.sprite.Sprite()
-                    back.image = pygame.image.load('items/pressed_key.png')
-                    back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / 10), int(WINDOWHEIGHT / 5)))
-                    back.rect = back.image.get_rect()
-                    back.rect.center = (int(WINDOWWIDTH / 2) + pressed_note, int(WINDOWHEIGHT / 2) + 100)
-                    DISPLAYSURF.blit(back.image, back.rect)
+
+                    # Change key appearance
+                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
+
                     D_NOTE.play()
 
                     # Draw the text drop shadow
@@ -194,12 +178,10 @@ def startGame():
                 elif event.key == K_d:
 
                     pressed_note = -100
-                    back = pygame.sprite.Sprite()
-                    back.image = pygame.image.load('items/pressed_key.png')
-                    back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / 10), int(WINDOWHEIGHT / 5)))
-                    back.rect = back.image.get_rect()
-                    back.rect.center = (int(WINDOWWIDTH / 2) + pressed_note, int(WINDOWHEIGHT / 2) + 100)
-                    DISPLAYSURF.blit(back.image, back.rect)
+
+                    # Change key appearance
+                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
+
                     E_NOTE.play()
 
 
@@ -216,12 +198,10 @@ def startGame():
                 elif event.key == K_f:
 
                     pressed_note = 0
-                    back = pygame.sprite.Sprite()
-                    back.image = pygame.image.load('items/pressed_key.png')
-                    back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / 10), int(WINDOWHEIGHT / 5)))
-                    back.rect = back.image.get_rect()
-                    back.rect.center = (int(WINDOWWIDTH / 2) + pressed_note, int(WINDOWHEIGHT / 2) + 100)
-                    DISPLAYSURF.blit(back.image, back.rect)
+
+                    # Change key appearance
+                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
+
                     F_NOTE.play()
 
 
@@ -235,93 +215,57 @@ def startGame():
                     titleRect.center = (int(WINDOWWIDTH / 2) - 3, int(WINDOWHEIGHT / 2) + 98)
                     DISPLAYSURF.blit(titleSurf, titleRect)
 
-
                 elif event.key == K_g:
 
                     pressed_note = 100
-                    back = pygame.sprite.Sprite()
-                    back.image = pygame.image.load('items/pressed_key.png')
-                    back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / 10), int(WINDOWHEIGHT / 5)))
-                    back.rect = back.image.get_rect()
-                    back.rect.center = (int(WINDOWWIDTH / 2) + pressed_note, int(WINDOWHEIGHT / 2) + 100)
-                    DISPLAYSURF.blit(back.image, back.rect)
+
+                    # Change key appearance
+                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
+
                     G_NOTE.play()
 
-
-                    # Draw the text drop shadow
-                    titleSurf, titleRect = makeTextObjs('G', MEDIUMFONT, TEXTSHADOWCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) + 100, int(WINDOWHEIGHT / 2) + 95)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
-
-                    # Draw the text
-                    titleSurf, titleRect = makeTextObjs('G', MEDIUMFONT, TEXTCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) + 103, int(WINDOWHEIGHT / 2) + 98)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
-
+                    # G key
+                    displayTextToScreen('G', MEDIUMFONT, TEXTSHADOWCOLOR, 100, 95)
+                    displayTextToScreen('G', MEDIUMFONT, TEXTCOLOR, 103, 98)
 
                 elif event.key == K_h:
 
                     pressed_note = 200
-                    back = pygame.sprite.Sprite()
-                    back.image = pygame.image.load('items/pressed_key.png')
-                    back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / 10), int(WINDOWHEIGHT / 5)))
-                    back.rect = back.image.get_rect()
-                    back.rect.center = (int(WINDOWWIDTH / 2) + pressed_note, int(WINDOWHEIGHT / 2) + 100)
-                    DISPLAYSURF.blit(back.image, back.rect)
+
+                    # Change key appearance
+                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
+
                     A_NOTE.play()
 
-                    # Draw the text drop shadow
-                    titleSurf, titleRect = makeTextObjs('A', MEDIUMFONT, TEXTSHADOWCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) + 200, int(WINDOWHEIGHT / 2) + 95)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
-
-                    # Draw the text
-                    titleSurf, titleRect = makeTextObjs('A', MEDIUMFONT, TEXTCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) + 203, int(WINDOWHEIGHT / 2) + 98)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
+                    # A key
+                    displayTextToScreen('A', MEDIUMFONT, TEXTSHADOWCOLOR, 200, 95)
+                    displayTextToScreen('A', MEDIUMFONT, TEXTCOLOR, 203, 98)
 
                 elif event.key == K_j:
 
                     pressed_note = 300
-                    back = pygame.sprite.Sprite()
-                    back.image = pygame.image.load('items/pressed_key.png')
-                    back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / 10), int(WINDOWHEIGHT / 5)))
-                    back.rect = back.image.get_rect()
-                    back.rect.center = (int(WINDOWWIDTH / 2) + pressed_note, int(WINDOWHEIGHT / 2) + 100)
-                    DISPLAYSURF.blit(back.image, back.rect)
+
+                    # Change key appearance
+                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
+
                     H_NOTE.play()
 
-
-                    # Draw the text drop shadow
-                    titleSurf, titleRect = makeTextObjs('H', MEDIUMFONT, TEXTSHADOWCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) + 300, int(WINDOWHEIGHT / 2) + 95)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
-
-                    # Draw the text
-                    titleSurf, titleRect = makeTextObjs('H', MEDIUMFONT, TEXTCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) + 303, int(WINDOWHEIGHT / 2) + 98)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
+                    # H key
+                    displayTextToScreen('H', MEDIUMFONT, TEXTSHADOWCOLOR, 300, 95)
+                    displayTextToScreen('H', MEDIUMFONT, TEXTCOLOR, 303, 98)
 
                 elif event.key == K_k:
 
                     pressed_note = 400
-                    back = pygame.sprite.Sprite()
-                    back.image = pygame.image.load('items/pressed_key.png')
-                    back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / 10), int(WINDOWHEIGHT / 5)))
-                    back.rect = back.image.get_rect()
-                    back.rect.center = (int(WINDOWWIDTH / 2) + pressed_note, int(WINDOWHEIGHT / 2) + 100)
-                    DISPLAYSURF.blit(back.image, back.rect)
+
+                    # Change key appearance
+                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
+
                     C_O_NOTE.play()
 
-                    # Draw the text drop shadow
-                    titleSurf, titleRect = makeTextObjs('C', MEDIUMFONT, TEXTSHADOWCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) + 400, int(WINDOWHEIGHT / 2) + 95)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
-
-                    # Draw the text
-                    titleSurf, titleRect = makeTextObjs('C', MEDIUMFONT, TEXTCOLOR)
-                    titleRect.center = (int(WINDOWWIDTH / 2) + 403, int(WINDOWHEIGHT / 2) + 98)
-                    DISPLAYSURF.blit(titleSurf, titleRect)
+                    # C octave key
+                    displayTextToScreen('C', MEDIUMFONT, TEXTSHADOWCOLOR, 400, 95)
+                    displayTextToScreen('C', MEDIUMFONT, TEXTCOLOR, 403, 98)
 
 
 def text_objects(text, font):
@@ -331,85 +275,37 @@ def text_objects(text, font):
 
 def painoKeyNoteNames():
 
-    # Draw the text drop shadow
-    titleSurf, titleRect = makeTextObjs('C', MEDIUMFONT, TEXTSHADOWCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) - 300, int(WINDOWHEIGHT / 2) + 95)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    # C key
+    displayTextToScreen('C', MEDIUMFONT, TEXTSHADOWCOLOR, -300, 95)
+    displayTextToScreen('C', MEDIUMFONT, TEXTCOLOR, -303, 98)
 
-    # Draw the text
-    titleSurf, titleRect = makeTextObjs('C', MEDIUMFONT, TEXTCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) - 303, int(WINDOWHEIGHT / 2) + 98)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    # D key
+    displayTextToScreen('D', MEDIUMFONT, TEXTSHADOWCOLOR, -200, 95)
+    displayTextToScreen('D', MEDIUMFONT, TEXTCOLOR, -203, 98)
 
-    # Draw the text drop shadow
-    titleSurf, titleRect = makeTextObjs('D', MEDIUMFONT, TEXTSHADOWCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) - 200, int(WINDOWHEIGHT / 2) + 95)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    # E key
+    displayTextToScreen('E', MEDIUMFONT, TEXTSHADOWCOLOR, -100, 95)
+    displayTextToScreen('E', MEDIUMFONT, TEXTCOLOR, -103, 98)
 
-    # Draw the text
-    titleSurf, titleRect = makeTextObjs('D', MEDIUMFONT, TEXTCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) - 203, int(WINDOWHEIGHT / 2) + 98)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    # F key
+    displayTextToScreen('F', MEDIUMFONT, TEXTSHADOWCOLOR, 0, 95)
+    displayTextToScreen('F', MEDIUMFONT, TEXTCOLOR, -3, 98)
 
-    # Draw the text drop shadow
-    titleSurf, titleRect = makeTextObjs('E', MEDIUMFONT, TEXTSHADOWCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) - 100, int(WINDOWHEIGHT / 2) + 95)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    # G key
+    displayTextToScreen('G', MEDIUMFONT, TEXTSHADOWCOLOR, 100, 95)
+    displayTextToScreen('G', MEDIUMFONT, TEXTCOLOR, 103, 98)
 
-    # Draw the text
-    titleSurf, titleRect = makeTextObjs('E', MEDIUMFONT, TEXTCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) - 103, int(WINDOWHEIGHT / 2) + 98)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    # A key
+    displayTextToScreen('A', MEDIUMFONT, TEXTSHADOWCOLOR, 200, 95)
+    displayTextToScreen('A', MEDIUMFONT, TEXTCOLOR, 203, 98)
 
-    # Draw the text drop shadow
-    titleSurf, titleRect = makeTextObjs('F', MEDIUMFONT, TEXTSHADOWCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2), int(WINDOWHEIGHT / 2) + 95)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    # H key
+    displayTextToScreen('H', MEDIUMFONT, TEXTSHADOWCOLOR, 300, 95)
+    displayTextToScreen('H', MEDIUMFONT, TEXTCOLOR, 303, 98)
 
-    # Draw the text
-    titleSurf, titleRect = makeTextObjs('F', MEDIUMFONT, TEXTCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) - 3, int(WINDOWHEIGHT / 2) + 98)
-    DISPLAYSURF.blit(titleSurf, titleRect)
-
-    # Draw the text drop shadow
-    titleSurf, titleRect = makeTextObjs('G', MEDIUMFONT, TEXTSHADOWCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) + 100, int(WINDOWHEIGHT / 2) + 95)
-    DISPLAYSURF.blit(titleSurf, titleRect)
-
-    # Draw the text
-    titleSurf, titleRect = makeTextObjs('G', MEDIUMFONT, TEXTCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) + 103, int(WINDOWHEIGHT / 2) + 98)
-    DISPLAYSURF.blit(titleSurf, titleRect)
-
-    # Draw the text drop shadow
-    titleSurf, titleRect = makeTextObjs('A', MEDIUMFONT, TEXTSHADOWCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) + 200, int(WINDOWHEIGHT / 2) + 95)
-    DISPLAYSURF.blit(titleSurf, titleRect)
-
-    # Draw the text
-    titleSurf, titleRect = makeTextObjs('A', MEDIUMFONT, TEXTCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) + 203, int(WINDOWHEIGHT / 2) + 98)
-    DISPLAYSURF.blit(titleSurf, titleRect)
-
-    # Draw the text drop shadow
-    titleSurf, titleRect = makeTextObjs('H', MEDIUMFONT, TEXTSHADOWCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) + 300, int(WINDOWHEIGHT / 2) + 95)
-    DISPLAYSURF.blit(titleSurf, titleRect)
-
-    # Draw the text
-    titleSurf, titleRect = makeTextObjs('H', MEDIUMFONT, TEXTCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) + 303, int(WINDOWHEIGHT / 2) + 98)
-    DISPLAYSURF.blit(titleSurf, titleRect)
-
-    # Draw the text drop shadow
-    titleSurf, titleRect = makeTextObjs('C', MEDIUMFONT, TEXTSHADOWCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) + 400, int(WINDOWHEIGHT / 2) + 95)
-    DISPLAYSURF.blit(titleSurf, titleRect)
-
-    # Draw the text
-    titleSurf, titleRect = makeTextObjs('C', MEDIUMFONT, TEXTCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) + 403, int(WINDOWHEIGHT / 2) + 98)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    # C octave key
+    displayTextToScreen('C', MEDIUMFONT, TEXTSHADOWCOLOR, 400, 95)
+    displayTextToScreen('C', MEDIUMFONT, TEXTCOLOR, 403, 98)
 
 
 def helpScreen():
@@ -418,12 +314,7 @@ def helpScreen():
     addTitleToScreen('Help')
 
     # Draw back button
-    back = pygame.sprite.Sprite()
-    back.image = pygame.image.load('items/go_back.png')
-    back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH/15), int(WINDOWHEIGHT/10)))
-    back.rect = back.image.get_rect()
-    back.rect.center = (int(WINDOWWIDTH / 2) - 350, int(WINDOWHEIGHT / 2) - 200)
-    DISPLAYSURF.blit(back.image, back.rect)
+    rect = makeSpriteObject('items/go_back.png', -350, -200, 15, 10)
 
     menuFlag = False
 
@@ -443,7 +334,7 @@ def helpScreen():
             if event.type == MOUSEBUTTONDOWN:
                 mouse_position = event.pos
 
-                if back.rect.collidepoint(mouse_position):
+                if rect.collidepoint(mouse_position):
                     menuScreen()
                     menuFlag = True
 
@@ -454,19 +345,42 @@ def makeTextObjs(text, font, color):
     return surf, surf.get_rect()
 
 
+def makeSpriteObject(image_url, position_width, position_height, scale_width, scale_height):
+    back = pygame.sprite.Sprite()
+    back.image = pygame.image.load(image_url)
+    back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / scale_width), int(WINDOWHEIGHT / scale_height)))
+    back.rect = back.image.get_rect()
+    back.rect.center = (int(WINDOWWIDTH / 2) + position_width, int(WINDOWHEIGHT / 2) + position_height)
+    DISPLAYSURF.blit(back.image, back.rect)
+    return back.rect
+
+
+def displayTextToScreen(text, font, color, offset_width, offset_height):
+
+    global startRect, helpRect, quitRect
+
+    titleSurf, titleRect = makeTextObjs(text, font, color)
+    titleRect.center = (int(WINDOWWIDTH / 2) + offset_width, int(WINDOWHEIGHT / 2) + offset_height)
+
+    if text == 'START':
+        startRect = titleRect
+    elif text == 'HELP':
+        helpRect = titleRect
+    elif text == 'QUIT':
+        quitRect = titleRect
+
+    DISPLAYSURF.blit(titleSurf, titleRect)
+
+
 def addTitleToScreen(text):
 
     DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
 
     # Draw the text drop shadow
-    titleSurf, titleRect = makeTextObjs(text, BIGFONT, TEXTSHADOWCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2), int(WINDOWHEIGHT / 2) - 100)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    displayTextToScreen(text, BIGFONT, TEXTSHADOWCOLOR, 0, -100)
 
     # Draw the text
-    titleSurf, titleRect = makeTextObjs(text, BIGFONT, TEXTCOLOR)
-    titleRect.center = (int(WINDOWWIDTH / 2) - 3, int(WINDOWHEIGHT / 2) - 103)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    displayTextToScreen(text, BIGFONT, TEXTCOLOR, -3, -103)
 
 
 if __name__ == '__main__':
