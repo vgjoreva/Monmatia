@@ -27,7 +27,7 @@ ITEMS = {'SPEED_UP': pygame.image.load('items/speed_up.png'),
 
 
 def main():
-    global FPSCLOCK, DISPLAYSURF, BASICFONT, BIGFONT, MEDIUMFONT, BACKGROUND_IMAGE, startRect, helpRect, quitRect
+    global FPSCLOCK, DISPLAYSURF, BASICFONT, BIGFONT, MEDIUMFONT, BACKGROUND_IMAGE, startRect, helpRect, exitRect
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -40,13 +40,12 @@ def main():
 
     startRect = None
     helpRect = None
-    quitRect = None
-
-    menuScreen()
+    exitRect = None
 
     # Load menu background music
     pygame.mixer.music.load('sounds/background_music.mp3')
-    pygame.mixer.music.play(-1, 0.0)
+
+    menuScreen('init')
 
     while True:
         pygame.display.update()
@@ -65,25 +64,40 @@ def main():
                     startGame()
                 elif helpRect.collidepoint(mouse_position):
                     helpScreen()
-                elif quitRect.collidepoint(mouse_position):
+                elif exitRect.collidepoint(mouse_position):
                     pygame.quit()
                     sys.exit()
 
 
-def menuScreen():
+def menuScreen(screen_name):
+    global startRect, helpRect, exitRect
 
     DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
     addTitleToScreen('Monmatia')
 
+    if screen_name == 'init' or screen_name == 'start':
+        # Start menu music
+        pygame.mixer.music.play(-1, 0.0)
+
     # Draw the "START" button
-    displayTextToScreen('START', BASICFONT, TEXTCOLOR, -100, 0)
+    startRect = displayTextToScreen('START', BASICFONT, TEXTCOLOR, -100, 0)
 
     # Draw the "HELP" button
-    displayTextToScreen('HELP', BASICFONT, TEXTCOLOR, 0, 0)
+    helpRect = displayTextToScreen('HELP', BASICFONT, TEXTCOLOR, 0, 0)
 
-    # Draw the "QUIT" button
-    displayTextToScreen('QUIT', BASICFONT, TEXTCOLOR, 100, 0)
+    # Draw the "EXIT" button
+    exitRect = displayTextToScreen('EXIT', BASICFONT, TEXTCOLOR, 100, 0)
 
+
+def drawPainoKeys():
+    note_position = -300
+    for notes in range(1, 9):
+        # Create initial keyboard
+        makeSpriteObject('items/normal_key.png', note_position, 100, 10, 5)
+
+        note_position += 100
+
+    painoKeyNoteNames()
 
 
 def startGame():
@@ -100,15 +114,7 @@ def startGame():
     H_NOTE = pygame.mixer.Sound('sounds/si.wav')
     C_O_NOTE = pygame.mixer.Sound('sounds/do_octave.wav')
 
-    note_position = -300
-    for notes in range(1, 9):
-
-        # Create initial keyboard
-        makeSpriteObject('items/normal_key.png', note_position, 100, 10, 5)
-
-        note_position += 100
-
-    painoKeyNoteNames()
+    drawPainoKeys()
 
     songFile = open('songs/odetojoy.txt', 'r')
     content = songFile.readlines() + ['\r\n']
@@ -118,7 +124,8 @@ def startGame():
     songNote = []
 
     pressed_note = -300
-    while True:
+    play = True
+    while play:
 
         pygame.display.update()
         FPSCLOCK.tick()
@@ -137,7 +144,13 @@ def startGame():
 
             if event.type == KEYDOWN:
 
-                if event.key == K_a:
+                if event.key == K_p:
+                    play = pauseGame()
+                    if play:
+                        DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
+                        drawPainoKeys()
+
+                elif event.key == K_a:
 
                     pressed_note = -300
 
@@ -241,6 +254,9 @@ def startGame():
                     displayTextToScreen('C', MEDIUMFONT, TEXTSHADOWCOLOR, 400, 95)
                     displayTextToScreen('C', MEDIUMFONT, TEXTCOLOR, 403, 98)
 
+    if not play:
+        menuScreen('start')
+
 
 def text_objects(text, font):
     textSurface = font.render(text, True, (0, 0, 0))
@@ -309,8 +325,49 @@ def helpScreen():
                 mouse_position = event.pos
 
                 if rect.collidepoint(mouse_position):
-                    menuScreen()
+                    menuScreen('help')
                     menuFlag = True
+
+
+def pauseGame():
+
+    DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
+    addTitleToScreen('Pause')
+
+    # Draw the "RESUME" button
+    resumeRect = displayTextToScreen('RESUME', BASICFONT, TEXTCOLOR, -100, 0)
+
+    # Draw the "QUIT" button
+    quitRect = displayTextToScreen('QUIT', BASICFONT, TEXTCOLOR, 100, 0)
+
+    menuFlag = False
+    continuePlaying = False
+
+    while True:
+
+        if menuFlag:
+            break
+
+        pygame.display.update()
+        FPSCLOCK.tick()
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == MOUSEBUTTONDOWN:
+                mouse_position = event.pos
+
+                if resumeRect.collidepoint(mouse_position):
+                    menuFlag = True
+                    continuePlaying = True
+
+                elif quitRect.collidepoint(mouse_position):
+                    menuFlag = True
+                    continuePlaying = False
+
+    return continuePlaying
 
 
 def makeTextObjs(text, font, color):
@@ -331,19 +388,20 @@ def makeSpriteObject(image_url, position_width, position_height, scale_width, sc
 
 def displayTextToScreen(text, font, color, offset_width, offset_height):
 
-    global startRect, helpRect, quitRect
+    global startRect, helpRect, exitRect
 
     titleSurf, titleRect = makeTextObjs(text, font, color)
     titleRect.center = (int(WINDOWWIDTH / 2) + offset_width, int(WINDOWHEIGHT / 2) + offset_height)
 
-    if text == 'START':
-        startRect = titleRect
-    elif text == 'HELP':
-        helpRect = titleRect
-    elif text == 'QUIT':
-        quitRect = titleRect
+    # if text == 'START':
+    #     startRect = titleRect
+    # elif text == 'HELP':
+    #     helpRect = titleRect
+    # elif text == 'EXIT':
+    #     exitRect = titleRect
 
     DISPLAYSURF.blit(titleSurf, titleRect)
+    return titleRect
 
 
 def addTitleToScreen(text):
