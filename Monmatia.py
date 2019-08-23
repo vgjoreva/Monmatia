@@ -477,7 +477,29 @@ def painoKeyNoteNames():
 def helpScreen():
 
     DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
-    addTitleToScreen('Help')
+    
+    # Draw the text drop shadow
+    displayTextToScreen('Help', BIGFONT, TEXTSHADOWCOLOR, 0, -175)
+
+    # Draw the text
+    displayTextToScreen('Help', BIGFONT, TEXTCOLOR, -3, -178)
+
+    displayTextToScreen('Note - Key', MEDIUMFONT, TEXTCOLOR, -150, -100)
+    displayTextToScreen('C1(DO) - a', BASICFONT, TEXTCOLOR, -150, -75)
+    displayTextToScreen('D(RE) - s', BASICFONT, TEXTCOLOR, -150, -50)
+    displayTextToScreen('E(MI) - d', BASICFONT, TEXTCOLOR, -150, -25)
+    displayTextToScreen('F(FA) - f', BASICFONT, TEXTCOLOR, -150, 0)
+    displayTextToScreen('G(SOL) - g', BASICFONT, TEXTCOLOR, -150, 25)
+    displayTextToScreen('A(LA) - h', BASICFONT, TEXTCOLOR, -150, 50)
+    displayTextToScreen('H(SI) - j', BASICFONT, TEXTCOLOR, -150, 75)
+    displayTextToScreen('C2(DO) - k', BASICFONT, TEXTCOLOR, -150, 100)
+
+    makeSpriteObject(TILES['NORMAL_TILE'], 100, -100, 10, 5)
+    displayTextToScreen('Quarter note', BASICFONT, TEXTCOLOR, 215, -100)
+    makeSpriteObject(TILES['FAST_TILE'], 100, 0, 10, 5)
+    displayTextToScreen('Eighth note (faster note)', BASICFONT, TEXTCOLOR, 275, 0)
+    makeSpriteObject(TILES['SLOW_TILE'], 100, 100, 10, 5)
+    displayTextToScreen('Half note (longer note)', BASICFONT, TEXTCOLOR, 275, 100)
 
     # Draw back button
     rect = makeSpriteObject(ITEMS['BACK_BUTTON'], -350, -200, 15, 10)
