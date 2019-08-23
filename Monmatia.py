@@ -27,7 +27,7 @@ ITEMS = {'SPEED_UP': pygame.image.load('items/speed_up.png'),
 
 
 def main():
-    global FPSCLOCK, DISPLAYSURF, BASICFONT, BIGFONT, MEDIUMFONT, BACKGROUND_IMAGE, startRect, helpRect, exitRect
+    global FPSCLOCK, DISPLAYSURF, BASICFONT, BIGFONT, MEDIUMFONT, BACKGROUND_IMAGE, POINTS, startRect, helpRect, exitRect
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -37,6 +37,7 @@ def main():
     BIGFONT = pygame.font.Font('freesansbold.ttf', 80)
     MEDIUMFONT = pygame.font.Font('freesansbold.ttf', 25)
     pygame.display.set_caption('Monmatia')
+    POINTS = 0
 
     startRect = None
     helpRect = None
@@ -151,7 +152,8 @@ def startGame():
             noteNumber += 1
 
         if noteNumber == len(songNote):
-            pauseGame()
+            play = False
+            break
 
         for event in pygame.event.get():
 
@@ -218,21 +220,97 @@ def startGame():
 
         if pressedKey:
             makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
-            nextNote = 100
-            pressedKey = False
+            addPoints(pressed_note, songNote[noteNumber], nextNote)
 
         painoKeyNoteNames()
 
         # Current note
         makeSpriteObject('items/normal_tile.png', songNote[noteNumber], nextNote, 10, 5)
-        nextNote += 25
+
+        if pressedKey:
+            nextNote = 100
+            pressedKey = False
+        else:
+            nextNote += 100
 
     if not play:
-        menuScreen('start')
+        finishGame(len(songNote))
+
+
+def finishGame(total_notes):
+    DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
+
+    # Draw the text drop shadow
+    displayTextToScreen('Game Over', BIGFONT, TEXTSHADOWCOLOR, 0, -150)
+
+    # Draw the text
+    displayTextToScreen('Game Over', BIGFONT, TEXTCOLOR, -3, -153)
+
+    if total_notes >= POINTS > 0.8 * total_notes:
+        makeSpriteObject('items/success.png', -75, -50, 10, 5)
+        makeSpriteObject('items/success.png', 0, -50, 10, 5)
+        makeSpriteObject('items/success.png', 75, -50, 10, 5)
+    elif 0.8 * total_notes >= POINTS > 0.6 * total_notes:
+        makeSpriteObject('items/success.png', -75, -50, 10, 5)
+        makeSpriteObject('items/success.png', 0, -50, 10, 5)
+        makeSpriteObject('items/pending.png', 75, -50, 10, 5)
+    elif 0.6 * total_notes >= POINTS > 0.4 * total_notes:
+        makeSpriteObject('items/success.png', -75, -50, 10, 5)
+        makeSpriteObject('items/pending.png', 0, -50, 10, 5)
+        makeSpriteObject('items/pending.png', 75, -50, 10, 5)
+    else:
+        makeSpriteObject('items/pending.png', -75, -50, 10, 5)
+        makeSpriteObject('items/pending.png', 0, -50, 10, 5)
+        makeSpriteObject('items/pending.png', 75, -50, 10, 5)
+
+    displayTextToScreen('Score: ' + str(POINTS), MEDIUMFONT, TEXTCOLOR, 0, 50)
+
+    # Draw the "RESUME" button
+    playAgainRect = displayTextToScreen('PLAY AGAIN', BASICFONT, TEXTCOLOR, -100, 100)
+
+    # Draw the "QUIT" button
+    quitRect = displayTextToScreen('QUIT', BASICFONT, TEXTCOLOR, 100, 100)
+
+    menuFlag = False
+    continuePlaying = False
+
+    while True:
+
+        if menuFlag:
+            break
+
+        pygame.display.update()
+        FPSCLOCK.tick()
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == MOUSEBUTTONDOWN:
+                mouse_position = event.pos
+
+                if playAgainRect.collidepoint(mouse_position):
+                    menuFlag = True
+                    startGame()
+
+                elif quitRect.collidepoint(mouse_position):
+                    menuFlag = True
+                    menuScreen('start')
+
+
+def addPoints(pressed_key, current_note, tile_position):
+    global POINTS
+
+    if pressed_key == current_note:
+        if tile_position >= 75:
+            POINTS += 1
+        elif 75 > tile_position >= 50:
+            POINTS += 0.5
 
 
 def checkIfNoteHasPassed(nextNote):
-    if nextNote > 100:
+    if nextNote > 150:
         return True
     return False
 
