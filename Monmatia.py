@@ -1,10 +1,10 @@
 # Monmatia - Piano tutorial
 # Created by: Veronika Gjoreva
 
-import random, time, pygame, sys
+import random, time, pygame, sys, math
 from pygame.locals import *
 
-FPS = 40
+FPS = 50
 WINDOWWIDTH = 940
 WINDOWHEIGHT = 580
 
@@ -23,7 +23,10 @@ TILES = {'NORMAL_TILE': pygame.image.load('items/normal_tile.png'),
 ITEMS = {'SPEED_UP': pygame.image.load('items/speed_up.png'),
          'SLOW_DOWN': pygame.image.load('items/slow_down.png'),
          'NORMAL_KEY': pygame.image.load('items/normal_key.png'),
-         'PRESSED_KEY': pygame.image.load('items/pressed_key.png')}
+         'PRESSED_KEY': pygame.image.load('items/pressed_key.png'),
+         'STAR_BADGE': pygame.image.load('items/success.png'),
+         'NORMAL_BADGE': pygame.image.load('items/pending.png'),
+         'BACK_BUTTON': pygame.image.load('items/go_back.png')}
 
 
 def main():
@@ -90,21 +93,26 @@ def menuScreen(screen_name):
     exitRect = displayTextToScreen('EXIT', BASICFONT, TEXTCOLOR, 100, 0)
 
 
-def drawPainoKeys():
+def drawPianoKeys():
     note_position = -300
     for notes in range(1, 9):
         # Create initial keyboard
-        makeSpriteObject('items/normal_key.png', note_position, 100, 10, 5)
+        makeSpriteObject(ITEMS['NORMAL_KEY'], note_position, 100, 10, 5)
         note_position += 100
 
     painoKeyNoteNames()
 
 
 def startGame():
+    global POINTS, FPS
 
     DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
-    print('start game')
+    POINTS = 0
 
+    container_image = pygame.image.load('background/container.png')
+    makeSpriteObject(container_image, 0, -300, 1.2, 2)
+
+    # Regular keys
     C_NOTE = pygame.mixer.Sound('sounds/do.wav')
     D_NOTE = pygame.mixer.Sound('sounds/re.wav')
     E_NOTE = pygame.mixer.Sound('sounds/mi.wav')
@@ -114,14 +122,24 @@ def startGame():
     H_NOTE = pygame.mixer.Sound('sounds/si.wav')
     C_O_NOTE = pygame.mixer.Sound('sounds/do_octave.wav')
 
-    drawPainoKeys()
+    # Streched keys
+    C_S_NOTE = pygame.mixer.Sound('sounds/do_stretched.wav')
+    D_S_NOTE = pygame.mixer.Sound('sounds/re_stretched.wav')
+    E_S_NOTE = pygame.mixer.Sound('sounds/mi_stretched.wav')
+    F_S_NOTE = pygame.mixer.Sound('sounds/fa_stretched.wav')
+    G_S_NOTE = pygame.mixer.Sound('sounds/sol_stretched.wav')
+    A_S_NOTE = pygame.mixer.Sound('sounds/la_stretched.wav')
+    H_S_NOTE = pygame.mixer.Sound('sounds/si_stretched.wav')
+    C_O_S_NOTE = pygame.mixer.Sound('sounds/do_stretched_octave.wav')
+
+    drawPianoKeys()
 
     songFile = open('songs/odetojoy.txt', 'r')
     content = songFile.readlines() + ['\r\n']
     songFile.close()
 
-    songNoteLines = []
     songNote = []
+    noteType = []
 
     for note in content:
         offset = -300
@@ -130,16 +148,27 @@ def startGame():
                 offset += 100
             elif dots == '0':
                 songNote.append(offset)
+                noteType.append('normal')
+                break
+            elif dots == '1':
+                songNote.append(offset)
+                noteType.append('faster')
+                break
+            elif dots == '2':
+                songNote.append(offset)
+                noteType.append('slower')
                 break
 
     songNote.reverse()
+    noteType.reverse()
 
     pressed_note = -300
 
-    nextNote = -300
+    nextNote = -200
     noteNumber = 0
     play = True
     pressedKey = False
+    previousNote = -1
 
     while play:
 
@@ -147,8 +176,9 @@ def startGame():
         FPSCLOCK.tick(FPS)
 
         hasNotePassed = checkIfNoteHasPassed(nextNote)
-        if hasNotePassed:
-            nextNote = -300
+        if hasNotePassed or pressedKey:
+            pressedKey = False
+            nextNote = -200
             noteNumber += 1
 
         if noteNumber == len(songNote):
@@ -158,7 +188,7 @@ def startGame():
         for event in pygame.event.get():
 
             # Return key to normal state
-            makeSpriteObject('items/normal_key.png', pressed_note, 100, 10, 5)
+            makeSpriteObject(ITEMS['NORMAL_KEY'], pressed_note, 100, 10, 5)
 
             # Make sure key labels remain on all the keys
             painoKeyNoteNames()
@@ -173,65 +203,96 @@ def startGame():
                     play = pauseGame()
                     if play:
                         DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
-                        drawPainoKeys()
+                        drawPianoKeys()
 
                 elif event.key == K_a:
                     pressed_note = -300
-                    C_NOTE.play()
+                    if noteType[noteNumber] == 'slower':
+                        C_S_NOTE.play()
+                    else:
+                        C_NOTE.play()
                     pressedKey = True
 
                 elif event.key == K_s:
                     pressed_note = -200
-                    D_NOTE.play()
+                    if noteType[noteNumber] == 'slower':
+                        D_S_NOTE.play()
+                    else:
+                        D_NOTE.play()
                     pressedKey = True
 
                 elif event.key == K_d:
                     pressed_note = -100
-                    E_NOTE.play()
+                    if noteType[noteNumber] == 'slower':
+                        E_S_NOTE.play()
+                    else:
+                        E_NOTE.play()
                     pressedKey = True
 
                 elif event.key == K_f:
                     pressed_note = 0
-                    F_NOTE.play()
+                    if noteType[noteNumber] == 'slower':
+                        F_S_NOTE.play()
+                    else:
+                        F_NOTE.play()
                     pressedKey = True
 
                 elif event.key == K_g:
                     pressed_note = 100
-                    G_NOTE.play()
+                    if noteType[noteNumber] == 'slower':
+                        G_S_NOTE.play()
+                    else:
+                        G_NOTE.play()
                     pressedKey = True
 
                 elif event.key == K_h:
                     pressed_note = 200
-                    A_NOTE.play()
+                    if noteType[noteNumber] == 'slower':
+                        A_S_NOTE.play()
+                    else:
+                        A_NOTE.play()
                     pressedKey = True
 
                 elif event.key == K_j:
                     pressed_note = 300
-                    H_NOTE.play()
+                    if noteType[noteNumber] == 'slower':
+                        H_S_NOTE.play()
+                    else:
+                        H_NOTE.play()
                     pressedKey = True
 
                 elif event.key == K_k:
                     pressed_note = 400
-                    C_O_NOTE.play()
+                    if noteType[noteNumber] == 'slower':
+                        C_O_S_NOTE.play()
+                    else:
+                        C_O_NOTE.play()
                     pressedKey = True
 
         DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
-        drawPainoKeys()
+        drawPianoKeys()
 
         if pressedKey:
-            makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
+            makeSpriteObject(ITEMS['PRESSED_KEY'], pressed_note, 100, 10, 5)
             addPoints(pressed_note, songNote[noteNumber], nextNote)
 
         painoKeyNoteNames()
 
         # Current note
-        makeSpriteObject('items/normal_tile.png', songNote[noteNumber], nextNote, 10, 5)
+        if noteType[noteNumber] == 'normal':
+            makeSpriteObject(TILES['NORMAL_TILE'], songNote[noteNumber], nextNote, 10, 5)
+        elif noteType[noteNumber] == 'slower':
+            makeSpriteObject(TILES['SLOW_TILE'], songNote[noteNumber], nextNote, 10, 5)
+        elif noteType[noteNumber] == 'faster':
+            makeSpriteObject(TILES['FAST_TILE'], songNote[noteNumber], nextNote, 10, 5)
 
-        if pressedKey:
-            nextNote = 100
-            pressedKey = False
-        else:
-            nextNote += 100
+        if not pressedKey:
+            if noteType[noteNumber] == 'faster':
+                nextNote += 10
+            else:
+                nextNote += 5
+        
+        makeSpriteObject(container_image, 0, -300, 1.05, 2)
 
     if not play:
         finishGame(len(songNote))
@@ -247,23 +308,23 @@ def finishGame(total_notes):
     displayTextToScreen('Game Over', BIGFONT, TEXTCOLOR, -3, -153)
 
     if total_notes >= POINTS > 0.8 * total_notes:
-        makeSpriteObject('items/success.png', -75, -50, 10, 5)
-        makeSpriteObject('items/success.png', 0, -50, 10, 5)
-        makeSpriteObject('items/success.png', 75, -50, 10, 5)
+        makeSpriteObject(ITEMS['STAR_BADGE'], -75, -50, 10, 5)
+        makeSpriteObject(ITEMS['STAR_BADGE'], 0, -50, 10, 5)
+        makeSpriteObject(ITEMS['STAR_BADGE'], 75, -50, 10, 5)
     elif 0.8 * total_notes >= POINTS > 0.6 * total_notes:
-        makeSpriteObject('items/success.png', -75, -50, 10, 5)
-        makeSpriteObject('items/success.png', 0, -50, 10, 5)
-        makeSpriteObject('items/pending.png', 75, -50, 10, 5)
+        makeSpriteObject(ITEMS['STAR_BADGE'], -75, -50, 10, 5)
+        makeSpriteObject(ITEMS['STAR_BADGE'], 0, -50, 10, 5)
+        makeSpriteObject(ITEMS['NORMAL_BADGE'], 75, -50, 10, 5)
     elif 0.6 * total_notes >= POINTS > 0.4 * total_notes:
-        makeSpriteObject('items/success.png', -75, -50, 10, 5)
-        makeSpriteObject('items/pending.png', 0, -50, 10, 5)
-        makeSpriteObject('items/pending.png', 75, -50, 10, 5)
+        makeSpriteObject(ITEMS['STAR_BADGE'], -75, -50, 10, 5)
+        makeSpriteObject(ITEMS['NORMAL_BADGE'], 0, -50, 10, 5)
+        makeSpriteObject(ITEMS['NORMAL_BADGE'], 75, -50, 10, 5)
     else:
-        makeSpriteObject('items/pending.png', -75, -50, 10, 5)
-        makeSpriteObject('items/pending.png', 0, -50, 10, 5)
-        makeSpriteObject('items/pending.png', 75, -50, 10, 5)
+        makeSpriteObject(ITEMS['NORMAL_BADGE'], -75, -50, 10, 5)
+        makeSpriteObject(ITEMS['NORMAL_BADGE'], 0, -50, 10, 5)
+        makeSpriteObject(ITEMS['NORMAL_BADGE'], 75, -50, 10, 5)
 
-    displayTextToScreen('Score: ' + str(POINTS), MEDIUMFONT, TEXTCOLOR, 0, 50)
+    displayTextToScreen('Player accuracy: ' + str(math.ceil(POINTS/(total_notes/100))) + '%', MEDIUMFONT, TEXTCOLOR, 0, 50)
 
     # Draw the "RESUME" button
     playAgainRect = displayTextToScreen('PLAY AGAIN', BASICFONT, TEXTCOLOR, -100, 100)
@@ -310,7 +371,7 @@ def addPoints(pressed_key, current_note, tile_position):
 
 
 def checkIfNoteHasPassed(nextNote):
-    if nextNote > 150:
+    if nextNote > 125:
         return True
     return False
 
@@ -361,7 +422,7 @@ def helpScreen():
     addTitleToScreen('Help')
 
     # Draw back button
-    rect = makeSpriteObject('items/go_back.png', -350, -200, 15, 10)
+    rect = makeSpriteObject(ITEMS['BACK_BUTTON'], -350, -200, 15, 10)
 
     menuFlag = False
 
@@ -433,9 +494,9 @@ def makeTextObjs(text, font, color):
     return surf, surf.get_rect()
 
 
-def makeSpriteObject(image_url, position_width, position_height, scale_width, scale_height):
+def makeSpriteObject(image, position_width, position_height, scale_width, scale_height):
     back = pygame.sprite.Sprite()
-    back.image = pygame.image.load(image_url)
+    back.image = image
     back.image = pygame.transform.scale(back.image, (int(WINDOWWIDTH / scale_width), int(WINDOWHEIGHT / scale_height)))
     back.rect = back.image.get_rect()
     back.rect.center = (int(WINDOWWIDTH / 2) + position_width, int(WINDOWHEIGHT / 2) + position_height)

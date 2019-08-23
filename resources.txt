@@ -1,0 +1,5 @@
+background: 			        https://craftpix.net/freebies/free-underwater-world-parallax-game-backgrounds/
+piano drop downs: 		        https://craftpix.net/freebies/free-buttons-2d-game-objects/
+indicators and game changers: 	https://craftpix.net/freebies/free-crystals-2d-game-items/
+piano keys:			            https://freesound.org/people/Jaz_the_MAN_2/packs/17749/?page=1#sound
+tile container:                 https://craftpix.net/freebies/free-objects-and-items-for-2d-tank-game/
