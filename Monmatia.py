@@ -110,6 +110,7 @@ def chooseASong():
         song_url = 'songs/' + song 
         songFile = open(song_url, 'r')
         title = songFile.readline()
+        title = title[:-1]
         songFile.close()
         print(title)
         song_urls.append(song_url)
