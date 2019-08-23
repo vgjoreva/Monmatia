@@ -4,7 +4,7 @@
 import random, time, pygame, sys
 from pygame.locals import *
 
-FPS = 25
+FPS = 40
 WINDOWWIDTH = 940
 WINDOWHEIGHT = 580
 
@@ -94,7 +94,6 @@ def drawPainoKeys():
     for notes in range(1, 9):
         # Create initial keyboard
         makeSpriteObject('items/normal_key.png', note_position, 100, 10, 5)
-
         note_position += 100
 
     painoKeyNoteNames()
@@ -123,12 +122,36 @@ def startGame():
     songNoteLines = []
     songNote = []
 
+    for note in content:
+        offset = -300
+        for dots in note:
+            if dots == '.':
+                offset += 100
+            elif dots == '0':
+                songNote.append(offset)
+                break
+
+    songNote.reverse()
+
     pressed_note = -300
+
+    nextNote = -300
+    noteNumber = 0
     play = True
+    pressedKey = False
+
     while play:
 
         pygame.display.update()
-        FPSCLOCK.tick()
+        FPSCLOCK.tick(FPS)
+
+        hasNotePassed = checkIfNoteHasPassed(nextNote)
+        if hasNotePassed:
+            nextNote = -300
+            noteNumber += 1
+
+        if noteNumber == len(songNote):
+            pauseGame()
 
         for event in pygame.event.get():
 
@@ -151,111 +174,67 @@ def startGame():
                         drawPainoKeys()
 
                 elif event.key == K_a:
-
                     pressed_note = -300
-
-                    # Change key appearance
-                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
-
                     C_NOTE.play()
-
-                    # C key
-                    displayTextToScreen('C', MEDIUMFONT, TEXTSHADOWCOLOR, -300, 95)
-                    displayTextToScreen('C', MEDIUMFONT, TEXTCOLOR, -303, 98)
+                    pressedKey = True
 
                 elif event.key == K_s:
-
                     pressed_note = -200
-
-                    # Change key appearance
-                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
-
                     D_NOTE.play()
-
-                    # D key
-                    displayTextToScreen('D', MEDIUMFONT, TEXTSHADOWCOLOR, -200, 95)
-                    displayTextToScreen('D', MEDIUMFONT, TEXTCOLOR, -203, 98)
+                    pressedKey = True
 
                 elif event.key == K_d:
-
                     pressed_note = -100
-
-                    # Change key appearance
-                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
-
                     E_NOTE.play()
-
-                    # E key
-                    displayTextToScreen('E', MEDIUMFONT, TEXTSHADOWCOLOR, -100, 95)
-                    displayTextToScreen('E', MEDIUMFONT, TEXTCOLOR, -103, 98)
+                    pressedKey = True
 
                 elif event.key == K_f:
-
                     pressed_note = 0
-
-                    # Change key appearance
-                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
-
                     F_NOTE.play()
-
-                    # F key
-                    displayTextToScreen('F', MEDIUMFONT, TEXTSHADOWCOLOR, 0, 95)
-                    displayTextToScreen('F', MEDIUMFONT, TEXTCOLOR, -3, 98)
+                    pressedKey = True
 
                 elif event.key == K_g:
-
                     pressed_note = 100
-
-                    # Change key appearance
-                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
-
                     G_NOTE.play()
-
-                    # G key
-                    displayTextToScreen('G', MEDIUMFONT, TEXTSHADOWCOLOR, 100, 95)
-                    displayTextToScreen('G', MEDIUMFONT, TEXTCOLOR, 103, 98)
+                    pressedKey = True
 
                 elif event.key == K_h:
-
                     pressed_note = 200
-
-                    # Change key appearance
-                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
-
                     A_NOTE.play()
-
-                    # A key
-                    displayTextToScreen('A', MEDIUMFONT, TEXTSHADOWCOLOR, 200, 95)
-                    displayTextToScreen('A', MEDIUMFONT, TEXTCOLOR, 203, 98)
+                    pressedKey = True
 
                 elif event.key == K_j:
-
                     pressed_note = 300
-
-                    # Change key appearance
-                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
-
                     H_NOTE.play()
-
-                    # H key
-                    displayTextToScreen('H', MEDIUMFONT, TEXTSHADOWCOLOR, 300, 95)
-                    displayTextToScreen('H', MEDIUMFONT, TEXTCOLOR, 303, 98)
+                    pressedKey = True
 
                 elif event.key == K_k:
-
                     pressed_note = 400
-
-                    # Change key appearance
-                    makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
-
                     C_O_NOTE.play()
+                    pressedKey = True
 
-                    # C octave key
-                    displayTextToScreen('C', MEDIUMFONT, TEXTSHADOWCOLOR, 400, 95)
-                    displayTextToScreen('C', MEDIUMFONT, TEXTCOLOR, 403, 98)
+        DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
+        drawPainoKeys()
+
+        if pressedKey:
+            makeSpriteObject('items/pressed_key.png', pressed_note, 100, 10, 5)
+            nextNote = 100
+            pressedKey = False
+
+        painoKeyNoteNames()
+
+        # Current note
+        makeSpriteObject('items/normal_tile.png', songNote[noteNumber], nextNote, 10, 5)
+        nextNote += 25
 
     if not play:
         menuScreen('start')
+
+
+def checkIfNoteHasPassed(nextNote):
+    if nextNote > 100:
+        return True
+    return False
 
 
 def text_objects(text, font):
@@ -392,14 +371,6 @@ def displayTextToScreen(text, font, color, offset_width, offset_height):
 
     titleSurf, titleRect = makeTextObjs(text, font, color)
     titleRect.center = (int(WINDOWWIDTH / 2) + offset_width, int(WINDOWHEIGHT / 2) + offset_height)
-
-    # if text == 'START':
-    #     startRect = titleRect
-    # elif text == 'HELP':
-    #     helpRect = titleRect
-    # elif text == 'EXIT':
-    #     exitRect = titleRect
-
     DISPLAYSURF.blit(titleSurf, titleRect)
     return titleRect
 
