@@ -1,7 +1,7 @@
 # Monmatia - Piano tutorial
 # Created by: Veronika Gjoreva
 
-import random, time, pygame, sys, math
+import random, time, pygame, sys, math, os
 from pygame.locals import *
 
 FPS = 50
@@ -64,8 +64,7 @@ def main():
                 mouse_position = event.pos
 
                 if startRect.collidepoint(mouse_position):
-                    pygame.mixer.music.stop()
-                    startGame()
+                    chooseASong()
                 elif helpRect.collidepoint(mouse_position):
                     helpScreen()
                 elif exitRect.collidepoint(mouse_position):
@@ -93,6 +92,63 @@ def menuScreen(screen_name):
     exitRect = displayTextToScreen('EXIT', BASICFONT, TEXTCOLOR, 100, 0)
 
 
+def chooseASong():
+    DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
+
+    # Draw the text drop shadow
+    displayTextToScreen('Pick a song', BIGFONT, TEXTSHADOWCOLOR, 0, -150)
+
+    # Draw the text
+    displayTextToScreen('Pick a song', BIGFONT, TEXTCOLOR, -3, -153)
+
+    songs = os.listdir('songs')
+    songRects = []
+    song_urls = []
+
+    position = -50
+    for song in songs:
+        song_url = 'songs/' + song 
+        songFile = open(song_url, 'r')
+        title = songFile.readline()
+        songFile.close()
+        print(title)
+        song_urls.append(song_url)
+        song_rect = displayTextToScreen(title, BASICFONT, TEXTCOLOR, 0, position)
+        songRects.append(song_rect)
+        position += 50
+
+    # Draw back button
+    buttonRect = makeSpriteObject(ITEMS['BACK_BUTTON'], -350, -200, 15, 10)
+
+    menuFlag = False
+
+    while True:
+
+        if menuFlag:
+            break
+
+        pygame.display.update()
+        FPSCLOCK.tick()
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == MOUSEBUTTONDOWN:
+                mouse_position = event.pos
+
+                if buttonRect.collidepoint(mouse_position):
+                    menuScreen('song_pick')
+                    menuFlag = True
+                else:
+                    for rect in songRects:
+                        if rect.collidepoint(mouse_position):
+                            pygame.mixer.music.stop()
+                            startGame(song_urls[songRects.index(rect)])
+                            menuFlag = True
+
+
 def drawPianoKeys():
     note_position = -300
     for notes in range(1, 9):
@@ -103,7 +159,7 @@ def drawPianoKeys():
     painoKeyNoteNames()
 
 
-def startGame():
+def startGame(url):
     global POINTS, FPS
 
     DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
@@ -134,7 +190,7 @@ def startGame():
 
     drawPianoKeys()
 
-    songFile = open('songs/odetojoy.txt', 'r')
+    songFile = open(url, 'r')
     content = songFile.readlines() + ['\r\n']
     songFile.close()
 
@@ -164,7 +220,7 @@ def startGame():
 
     pressed_note = -300
 
-    nextNote = -200
+    nextNote = -300
     noteNumber = 0
     play = True
     pressedKey = False
@@ -353,7 +409,8 @@ def finishGame(total_notes):
 
                 if playAgainRect.collidepoint(mouse_position):
                     menuFlag = True
-                    startGame()
+                    pygame.mixer.music.play()
+                    chooseASong()
 
                 elif quitRect.collidepoint(mouse_position):
                     menuFlag = True
