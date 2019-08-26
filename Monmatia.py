@@ -26,11 +26,16 @@ ITEMS = {'SPEED_UP': pygame.image.load('items/speed_up.png'),
          'PRESSED_KEY': pygame.image.load('items/pressed_key.png'),
          'STAR_BADGE': pygame.image.load('items/success.png'),
          'NORMAL_BADGE': pygame.image.load('items/pending.png'),
-         'BACK_BUTTON': pygame.image.load('items/go_back.png')}
+         'BACK_BUTTON': pygame.image.load('items/go_back.png'),
+         'NEXT': pygame.image.load('items/next.png'),
+         'PREV': pygame.image.load('items/prev.png')}
+
+SPEED = {'CURRENT': pygame.image.load('items/speed_up.png'),
+         'OTHER': pygame.image.load('items/slow_down.png')}
 
 
 def main():
-    global FPSCLOCK, DISPLAYSURF, BASICFONT, BIGFONT, MEDIUMFONT, BACKGROUND_IMAGE, POINTS, startRect, helpRect, exitRect
+    global FPSCLOCK, DISPLAYSURF, BASICFONT, BIGFONT, MEDIUMFONT, BACKGROUND_IMAGE, POINTS, startRect, helpRect, exitRect, optionsRect, slow, normal, speedUp
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -44,7 +49,11 @@ def main():
 
     startRect = None
     helpRect = None
+    optionsRect = None
     exitRect = None
+    slow = None
+    normal = None
+    speedUp = None
 
     # Load menu background music
     pygame.mixer.music.load('sounds/background_music.mp3')
@@ -67,13 +76,15 @@ def main():
                     chooseASong()
                 elif helpRect.collidepoint(mouse_position):
                     helpScreen()
+                elif optionsRect.collidepoint(mouse_position):
+                    updateOptions()
                 elif exitRect.collidepoint(mouse_position):
                     pygame.quit()
                     sys.exit()
 
 
 def menuScreen(screen_name):
-    global startRect, helpRect, exitRect
+    global startRect, helpRect, exitRect, optionsRect
 
     DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
     addTitleToScreen('Monmatia')
@@ -83,13 +94,16 @@ def menuScreen(screen_name):
         pygame.mixer.music.play(-1, 0.0)
 
     # Draw the "START" button
-    startRect = displayTextToScreen('START', BASICFONT, TEXTCOLOR, -100, 0)
+    startRect = displayTextToScreen('START', BASICFONT, TEXTCOLOR, -150, 0)
 
     # Draw the "HELP" button
-    helpRect = displayTextToScreen('HELP', BASICFONT, TEXTCOLOR, 0, 0)
+    helpRect = displayTextToScreen('HELP', BASICFONT, TEXTCOLOR, -50, 0)
+
+    # Draw the "OPTIONS" button
+    optionsRect = displayTextToScreen('OPTIONS', BASICFONT, TEXTCOLOR, 50, 0)
 
     # Draw the "EXIT" button
-    exitRect = displayTextToScreen('EXIT', BASICFONT, TEXTCOLOR, 100, 0)
+    exitRect = displayTextToScreen('EXIT', BASICFONT, TEXTCOLOR, 150, 0)
 
 
 def chooseASong():
@@ -352,7 +366,11 @@ def startGame(url):
         makeSpriteObject(container_image, 0, -300, 1.05, 2)
 
     if not play:
-        finishGame(len(songNote))
+
+        if noteNumber < len(songNote)-1:
+            finishGame(1)
+        else:
+            finishGame(len(songNote))
 
 
 def finishGame(total_notes):
@@ -525,6 +543,107 @@ def helpScreen():
                 if rect.collidepoint(mouse_position):
                     menuScreen('help')
                     menuFlag = True
+
+
+def updateOptions():
+    global slow, normal, speedUp, FPS
+
+    DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
+    
+    # Draw the text drop shadow
+    displayTextToScreen('Options', BIGFONT, TEXTSHADOWCOLOR, 0, -175)
+
+    # Draw the text
+    displayTextToScreen('Options', BIGFONT, TEXTCOLOR, -3, -178)
+
+    if slow == None and normal == None and speedUp == None:
+        slow = SPEED['OTHER']
+        normal = SPEED['CURRENT']
+        speedUp = SPEED['OTHER']
+
+    prev = makeSpriteObject(ITEMS['PREV'], -230, 0, 10, 10)
+    next = makeSpriteObject(ITEMS['NEXT'], 230, 0, 10, 10)
+    
+    slowDownRect = makeSpriteObject(slow, -100, 0, 10, 5)
+    displayTextToScreen('Slower', BASICFONT, TEXTCOLOR, -100, 50)
+    normalSpeedRect = makeSpriteObject(normal, 0, 0, 10, 5)
+    displayTextToScreen('Normal', BASICFONT, TEXTCOLOR, 0, 50)
+    speedUpRect = makeSpriteObject(speedUp, 100, 0, 10, 5)
+    displayTextToScreen('Faster', BASICFONT, TEXTCOLOR, 100, 50)
+
+    displayTextToScreen('Note Speed', MEDIUMFONT, TEXTCOLOR, 0, 100)
+
+
+    # Draw back button
+    rect = makeSpriteObject(ITEMS['BACK_BUTTON'], -350, -200, 15, 10)
+
+    menuFlag = False
+    clicked = False
+
+    while True:
+
+        if menuFlag:
+            break
+
+        pygame.display.update()
+        FPSCLOCK.tick()
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == MOUSEBUTTONDOWN:
+                mouse_position = event.pos
+
+                if rect.collidepoint(mouse_position):
+                    menuScreen('help')
+                    menuFlag = True
+                elif next.collidepoint(mouse_position):
+                    FPS += 30
+                    clicked = True
+                    if normal == SPEED['CURRENT']:
+                        normal = SPEED['OTHER']
+                        speedUp = SPEED['CURRENT']
+                    elif slow == SPEED['CURRENT']:
+                        slow = SPEED['OTHER']
+                        normal = SPEED['CURRENT']
+
+                elif prev.collidepoint(mouse_position):
+                    FPS -= 30
+                    clicked = True
+                    if speedUp == SPEED['CURRENT']:
+                        normal = SPEED['CURRENT']
+                        speedUp = SPEED['OTHER']
+                    elif normal == SPEED['CURRENT']:
+                        slow = SPEED['CURRENT']
+                        normal = SPEED['OTHER']
+                
+            if clicked:
+                clicked = False
+                DISPLAYSURF.blit(BACKGROUND_IMAGE, [0, 0])
+
+                # Draw the text drop shadow
+                displayTextToScreen('Options', BIGFONT, TEXTSHADOWCOLOR, 0, -175)
+
+                # Draw the text
+                displayTextToScreen('Options', BIGFONT, TEXTCOLOR, -3, -178)
+
+                prev = makeSpriteObject(ITEMS['PREV'], -230, 0, 10, 10)
+                next = makeSpriteObject(ITEMS['NEXT'], 230, 0, 10, 10)
+                
+                slowDownRect = makeSpriteObject(slow, -100, 0, 10, 5)
+                displayTextToScreen('Slower', BASICFONT, TEXTCOLOR, -100, 50)
+                normalSpeedRect = makeSpriteObject(normal, 0, 0, 10, 5)
+                displayTextToScreen('Normal', BASICFONT, TEXTCOLOR, 0, 50)
+                speedUpRect = makeSpriteObject(speedUp, 100, 0, 10, 5)
+                displayTextToScreen('Faster', BASICFONT, TEXTCOLOR, 100, 50)
+
+                displayTextToScreen('Note Speed', MEDIUMFONT, TEXTCOLOR, 0, 100)
+
+                # Draw back button
+                rect = makeSpriteObject(ITEMS['BACK_BUTTON'], -350, -200, 15, 10)
+
 
 
 def pauseGame():
