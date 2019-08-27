@@ -126,7 +126,6 @@ def chooseASong():
         title = songFile.readline()
         title = title[:-1]
         songFile.close()
-        print(title)
         song_urls.append(song_url)
         song_rect = displayTextToScreen(title, BASICFONT, TEXTCOLOR, 0, position)
         songRects.append(song_rect)
