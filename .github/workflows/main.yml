@@ -1,0 +1,46 @@
+name: Update the deployment pull request's description
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - master
+
+jobs:
+  add-security-questionnaire:
+    name: Include questionnaire in PR description
+    if: github.event.action == 'opened'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch content
+        id: fetch
+        uses: fjogeleit/http-request-action@e8dd067b83c3ab0774c76bf065b1c4f11c7e45ba
+        with:
+          url: 'http://ci-cd-resources-hosting.s3-website.eu-central-1.amazonaws.com/security_questionnaire.md'
+          method: 'GET'
+
+      - name: Include questionnaire in PR description
+        uses: tzkhan/pr-update-action@bbd4c9395df8a9c4ef075b8b7fe29f2ca76cdca9
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          base-branch-regex: '[a-z\d-_.\\/]+'
+          body-template: |
+            ${{ fromJSON(steps.fetch.outputs.response) }}
+          body-update-action: 'suffix'
+
+  update-description:
+    name: Add an additional note if PR is approved
+    if: github.event.review.state == 'approved' && github.event.action == 'synchronize'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Include additional note in the PR description
+        uses: tzkhan/pr-update-action@bbd4c9395df8a9c4ef075b8b7fe29f2ca76cdca9
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          base-branch-regex: '[a-z\d-_.\\/]+'
+          body-template: |
+            > **Note**: If the pull request has already been approved by the security team, but changes have been applied after the approval, the answers within the Security Questionnaire only apply to the changes made after the approval.
+          body-update-action: 'suffix'
