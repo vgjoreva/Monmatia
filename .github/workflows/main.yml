@@ -24,7 +24,7 @@ jobs:
       - name: Include questionnaire in PR description
         uses: tzkhan/pr-update-action@bbd4c9395df8a9c4ef075b8b7fe29f2ca76cdca9
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          repo-token: "${{ secrets.TOKEN }}"
           base-branch-regex: '[a-z\d-_.\\/]+'
           body-template: |
             ${{ fromJSON(steps.fetch.outputs.response) }}
@@ -39,7 +39,7 @@ jobs:
       - name: Include additional note in the PR description
         uses: tzkhan/pr-update-action@bbd4c9395df8a9c4ef075b8b7fe29f2ca76cdca9
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          repo-token: "${{ secrets.TOKEN }}"
           base-branch-regex: '[a-z\d-_.\\/]+'
           body-template: |
             > **Note**: If the pull request has already been approved by the security team, but changes have been applied after the approval, the answers within the Security Questionnaire only apply to the changes made after the approval.
